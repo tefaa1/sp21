@@ -14,14 +14,6 @@ public class ArrayDeque<tefa> {
         nextFirst=7;
         nextLast=0;
     }
-    ArrayDeque(tefa val){
-        capacity=8;
-        size=1;
-        a=(tefa[])new Object[capacity];
-        a[7]=val;
-        nextFirst=6;
-        nextLast=0;
-    }
     private void resize(){
         tefa []temp=(tefa[])new Object[capacity];
         for(int i=nextFirst+1,j=0;j<size;i++,j++){

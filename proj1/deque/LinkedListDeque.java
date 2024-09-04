@@ -25,13 +25,6 @@ public class LinkedListDeque<tefa> {
         sentinel.prev=sentinel;
         size = 0;
     }
-
-    LinkedListDeque(tefa val) {
-        size = 1;
-        sentinel=new node();
-        sentinel.next=sentinel.prev=new node(val,sentinel,sentinel);
-    }
-
     public void addFirst(tefa val) {
         node first=new node(val,sentinel.next,sentinel);
         sentinel.next.prev=first;
