@@ -1,5 +1,6 @@
 package deque;
-
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class ArrayDeque<tefa> {
     private tefa []a;
@@ -14,10 +15,11 @@ public class ArrayDeque<tefa> {
         nextFirst=7;
         nextLast=0;
     }
-    private void resize(){
+    public boolean isEmpty(){return (size()==0);}
+    private void resize(int before_capacity){
         tefa []temp=(tefa[])new Object[capacity];
         for(int i=nextFirst+1,j=0;j<size;i++,j++){
-            i%=size;
+            i%=before_capacity;
             temp[j]=a[i];
         }
         a=temp;
@@ -27,7 +29,7 @@ public class ArrayDeque<tefa> {
     public void addFirst(tefa val){
         if(size==capacity) {
             capacity*=2;
-            resize();
+            resize(capacity/2);
         }
         a[nextFirst]=val;
         nextFirst--;
@@ -38,7 +40,7 @@ public class ArrayDeque<tefa> {
     public void addLast(tefa val){
         if(size==capacity){
             capacity*=2;
-            resize();
+            resize(capacity/2);
         }
         a[nextLast]=val;
         nextLast++;
@@ -64,7 +66,7 @@ public class ArrayDeque<tefa> {
         size--;
         if(size*100.0/capacity<25){
             capacity/=2;
-            resize();
+            resize(capacity*2);
         }
         return temp;
     }
@@ -78,7 +80,7 @@ public class ArrayDeque<tefa> {
         size--;
         if(size*100.0/capacity<25){
             capacity/=2;
-            resize();
+            resize(capacity*2);
         }
         return temp;
     }
