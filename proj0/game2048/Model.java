@@ -113,7 +113,30 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-
+        board.setViewingPerspective(side);
+        int[] emp_row={3,3,3,3};
+        for(int i=board.size()-2;i>=0;i--) {
+            for (int j = 0; j < board.size(); j++) {
+                Tile t=board.tile(j,i);
+                if(t==null)continue;
+                if (board.tile(j, emp_row[j]) == null) {
+                    board.move(j,emp_row[j],t);
+                }
+                else{
+                    if(board.tile(j, emp_row[j]).value()==t.value()){
+                        board.move(j,emp_row[j],t);
+                        emp_row[j]--;
+                        this.score+=t.value()*2;
+                    }
+                    else{
+                        board.move(j,emp_row[j]-1,t);
+                        emp_row[j]--;
+                    }
+                }
+                changed=true;
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
@@ -137,20 +160,30 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(j, i) == null) {
+                        return true;
+                }
+            }
+        }
         return false;
     }
-
     /**
      * Returns true if any tile is equal to the maximum valid value.
      * Maximum valid value is given by MAX_PIECE. Note that
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(j, i) != null && b.tile(j, i).value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
-
     /**
      * Returns true if there are any valid moves on the board.
      * There are two ways that there can be valid moves:
@@ -158,7 +191,22 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        int[] dx = {1, -1, 0, 0}, dy = {0, 0, 1, -1}; // UDLR
+        for (int i = 0; i < b.size(); i++) {
+            for (int j = 0; j < b.size(); j++) {
+                if (b.tile(j, i) == null) return true;
+                else {
+                    for (int k = 0; k < b.size(); k++) {
+                        int newi = i + dx[k], newj = j + dy[k];
+                        if (newi >= 0 && newi < b.size() && newj >= 0 && newj < b.size() && b.tile(newj, newi) != null) {
+                            if (b.tile(j, i).value() == b.tile(newj, newi).value()) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
