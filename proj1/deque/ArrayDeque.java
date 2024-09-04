@@ -94,7 +94,4 @@ public class ArrayDeque<tefa> {
         if(index>=size)return null;
         return a[(nextFirst+index+1)%capacity];
     }
-    public static void main(String []args){
-
-    }
 }

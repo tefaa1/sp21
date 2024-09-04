@@ -94,6 +94,4 @@ public class LinkedListDeque<tefa> {
         if(index>=size)return null;
         return rec(index,sentinel.next);
     }
-    public static void main(String []args){
-    }
 }
