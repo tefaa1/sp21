@@ -19,7 +19,7 @@ public class LinkedListDeque<tefa> {
     private node sentinel;
     private int size;
 
-    LinkedListDeque() {
+    public LinkedListDeque() {
         sentinel = new node();
         sentinel.next=sentinel;
         sentinel.prev=sentinel;

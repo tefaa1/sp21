@@ -7,7 +7,7 @@ public class ArrayDeque<tefa> {
     private int capacity;
     private int nextFirst;
     private int nextLast;
-    ArrayDeque(){
+    public ArrayDeque(){
         capacity=8;
         size=0;
         a=(tefa[]) new Object[capacity];
