@@ -34,13 +34,14 @@ public class TimeSLList {
                 opCounts.addLast(10000);
                 st*=2;
                 Stopwatch sw = new Stopwatch();
-                s.getLast();
+                for(int j=0;j<10000;j++) {
+                    s.getLast();
+                }
                 double time=sw.elapsedTime();
                 times.addLast(time);
             }
         }
         printTimingTable(Ns,times,opCounts);
-        // TODO: YOUR CODE HERE
     }
 
 }
