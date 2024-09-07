@@ -112,17 +112,17 @@ public class LinkedListDeque<tefa> implements Deque<tefa>,Iterable<tefa>{
     public Iterator<tefa>iterator(){
         return new LinkedListDequeIterator();
     }
-    @Override
-    public boolean equals(Object o){
-        if(o instanceof LinkedListDeque AAD){
-            if(AAD.size()!=size())return false;
-            for(int i=0;i<size();i++){
-                if(get(i)!=AAD.get(i))return false;
-            }
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean equals(Object o){
+//        if(o instanceof LinkedListDeque AAD){
+//            if(AAD.size()!=size())return false;
+//            for(int i=0;i<size();i++){
+//                if(get(i)!=AAD.get(i))return false;
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
     @Override
     public String toString(){
         if(size()==0)return "{}";
