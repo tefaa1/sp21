@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /** Tests the GuitarString class.
  *  @author Josh Hug
  */
-public class TestGuitarString  {
+public class TestGuitarString {
 
     @Test
     public void testPluckTheAString() {
