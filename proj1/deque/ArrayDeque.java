@@ -21,10 +21,10 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
         nextLast = 0;
     }
 
-    private void resize(int before_capacity) {
+    private void resize(int beforeCapacity) {
         T[] temp = (T[]) new Object[capacity];
         for (int i = nextFirst + 1, j = 0; j < size; i++, j++) {
-            i %= before_capacity;
+            i %= beforeCapacity;
             temp[j] = a[i];
         }
         a = temp;
@@ -74,13 +74,15 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
 
     @Override
     public T removeFirst() {
-        if (size == 0) return null;
+        if (size == 0){
+            return null;
+        }
         nextFirst++;
         nextFirst %= capacity;
         T temp = a[nextFirst];
         a[nextFirst] = null;
         size--;
-        if (size * 100.0 / capacity < 25) {
+        if (size * 100.0 / capacity < 25 && capacity / 2 >= 8) {
             capacity /= 2;
             resize(capacity * 2);
         }
@@ -89,14 +91,16 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
 
     @Override
     public T removeLast() {
-        if (size == 0) return null;
+        if (size == 0){
+            return null;
+        }
         nextLast--;
         nextLast += capacity;
         nextLast %= capacity;
         T temp = a[nextLast];
         a[nextLast] = null;
         size--;
-        if (size * 100.0 / capacity < 25) {
+        if (size * 100.0 / capacity < 25 && capacity / 2 >= 8) {
             capacity /= 2;
             resize(capacity * 2);
         }
@@ -105,7 +109,9 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
 
     @Override
     public T get(int index) {
-        if (index >= size) return null;
+        if (index >= size || index < 0) {
+            return null;
+        }
         return a[(nextFirst + index + 1) % capacity];
     }
 
@@ -125,34 +131,38 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new ArrayDequeIterator();
+        return new ArrayDequeIterator<>();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof Deque) {
-            Deque<T>AAD=(Deque)o;
-            if (AAD.size() != size()) return false;
+            Deque<T> anotherDeque = (Deque) o;
+            if (anotherDeque.size() != size()) {
+                return false;
+            }
             for (int i = 0; i < size(); i++) {
-                if (!get(i).equals(AAD.get(i))) return false;
+                if (!get(i).equals(anotherDeque.get(i))) {
+                    return false;
+                }
             }
             return true;
         }
         return false;
     }
 
-    @Override
-    public String toString() {
-        if (size() == 0) return "{}";
-        StringBuilder s = new StringBuilder("{");
-        int cnt = 1;
-        for (T it : this) {
-            s.append(it);
-            if (cnt < size())
-                s.append(", ");
-            cnt++;
-        }
-        s.append("}");
-        return s.toString();
-    }
+//    @Override
+//    public String toString() {
+//        if (size() == 0) return "{}";
+//        StringBuilder s = new StringBuilder("{");
+//        int cnt = 1;
+//        for (T it : this) {
+//            s.append(it);
+//            if (cnt < size())
+//                s.append(", ");
+//            cnt++;
+//        }
+//        s.append("}");
+//        return s.toString();
+//    }
 }

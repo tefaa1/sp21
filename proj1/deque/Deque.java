@@ -3,8 +3,6 @@
  */
 package deque;
 
-import java.util.Iterator;
-
 public interface Deque<T> {
     public void addFirst(T item);
 
@@ -14,13 +12,13 @@ public interface Deque<T> {
         return size() == 0;
     }
 
-    public int size();
+    int size();
 
-    public void printDeque();
+    void printDeque();
 
-    public T removeFirst();
+    T removeFirst();
 
-    public T removeLast();
+    T removeLast();
 
-    public T get(int index);
+    T get(int index);
 }

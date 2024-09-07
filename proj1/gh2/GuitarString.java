@@ -1,9 +1,6 @@
 package gh2;
 import deque.ArrayDeque;
 import deque.Deque;
-// TODO: uncomment the following import once you're ready to start this portion
-
-// TODO: maybe more imports
 
 //Note: This file will not compile until you complete the Deque implementations
 public class GuitarString {
@@ -29,8 +26,12 @@ public class GuitarString {
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
         int x = buffer.size();
-        for (int i = 0; i < x; i++) buffer.removeLast();
-        for (int i = 0; i < x; i++) buffer.addLast(Math.random() - 0.5);
+        for (int i = 0; i < x; i++){
+            buffer.removeLast();
+        }
+        for (int i = 0; i < x; i++){
+            buffer.addLast(Math.random() - 0.5);
+        }
         //       Make sure that your random numbers are different from each
         //       other. This does not mean that you need to check that the numbers
         //       are different from each other. It means you should repeatedly call
