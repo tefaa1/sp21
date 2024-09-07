@@ -4,9 +4,9 @@
 package deque;
 
 public interface Deque<T> {
-    public void addFirst(T item);
+    void addFirst(T item);
 
-    public void addLast(T item);
+    void addLast(T item);
 
     default boolean isEmpty() {
         return size() == 0;

@@ -5,7 +5,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     private T[] a;
     private int size;
@@ -74,7 +74,7 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
 
     @Override
     public T removeFirst() {
-        if (size == 0){
+        if (size == 0) {
             return null;
         }
         nextFirst++;
@@ -91,7 +91,7 @@ public class ArrayDeque<T> implements Deque<T>,Iterable<T> {
 
     @Override
     public T removeLast() {
-        if (size == 0){
+        if (size == 0) {
             return null;
         }
         nextLast--;

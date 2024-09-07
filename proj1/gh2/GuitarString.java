@@ -26,10 +26,10 @@ public class GuitarString {
     /* Pluck the guitar string by replacing the buffer with white noise. */
     public void pluck() {
         int x = buffer.size();
-        for (int i = 0; i < x; i++){
+        for (int i = 0; i < x; i++) {
             buffer.removeLast();
         }
-        for (int i = 0; i < x; i++){
+        for (int i = 0; i < x; i++) {
             buffer.addLast(Math.random() - 0.5);
         }
         //       Make sure that your random numbers are different from each
