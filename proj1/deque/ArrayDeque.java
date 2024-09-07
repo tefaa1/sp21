@@ -1,8 +1,12 @@
+/**
+ @Author mohamed abdellatif
+ */
 package deque;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
-public class ArrayDeque<tefa> {
+import java.util.Iterator;
+
+public class ArrayDeque<tefa> implements Deque<tefa>,Iterable<tefa>{
+
     private tefa []a;
     private int size;
     private int capacity;
@@ -15,7 +19,6 @@ public class ArrayDeque<tefa> {
         nextFirst=7;
         nextLast=0;
     }
-    public boolean isEmpty(){return (size()==0);}
     private void resize(int before_capacity){
         tefa []temp=(tefa[])new Object[capacity];
         for(int i=nextFirst+1,j=0;j<size;i++,j++){
@@ -26,6 +29,7 @@ public class ArrayDeque<tefa> {
         nextFirst=capacity-1;
         nextLast=size;
     }
+    @Override
     public void addFirst(tefa val){
         if(size==capacity) {
             capacity*=2;
@@ -37,6 +41,7 @@ public class ArrayDeque<tefa> {
         nextFirst%=capacity;
         size++;
     }
+    @Override
     public void addLast(tefa val){
         if(size==capacity){
             capacity*=2;
@@ -47,8 +52,9 @@ public class ArrayDeque<tefa> {
         nextLast%=capacity;
         size++;
     }
-//    public boolean isEmpty(){return (size()==0);}
+    @Override
     public int size(){return size;}
+    @Override
     public void printDeque(){
         int temp=nextFirst+1;
         for(int i=0;i<size;i++,temp++){
@@ -57,6 +63,7 @@ public class ArrayDeque<tefa> {
         }
         System.out.println();
     }
+    @Override
     public tefa removeFirst(){
         if(size==0)return null;
         nextFirst++;
@@ -70,6 +77,7 @@ public class ArrayDeque<tefa> {
         }
         return temp;
     }
+    @Override
     public tefa removeLast(){
         if(size==0)return null;
         nextLast--;
@@ -84,8 +92,49 @@ public class ArrayDeque<tefa> {
         }
         return temp;
     }
+    @Override
     public tefa get(int index){
         if(index>=size)return null;
         return a[(nextFirst+index+1)%capacity];
+    }
+    private class ArrayDequeIterator <tefa>implements Iterator<tefa>{
+        private int pos=0;
+        public boolean hasNext(){
+            return pos<size();
+        }
+        public tefa next(){
+            tefa x =(tefa)get(pos);
+            pos++;
+            return x;
+        }
+    }
+    @Override
+    public Iterator<tefa>iterator(){
+        return new ArrayDequeIterator();
+    }
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof ArrayDeque AAD){
+            if(AAD.size()!=size())return false;
+            for(int i=0;i<size();i++){
+                if(get(i)!=AAD.get(i))return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public String toString(){
+        if(size()==0)return "{}";
+        StringBuilder s=new StringBuilder("{");
+        int cnt=1;
+        for(tefa it:this){
+            s.append(it);
+            if(cnt<size())
+                s.append(", ");
+            cnt++;
+        }
+        s.append("}");
+        return s.toString();
     }
 }

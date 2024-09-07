@@ -1,8 +1,12 @@
+/**
+ @Author mohamed abdellatif
+ */
 package deque;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Iterator;
 
-public class LinkedListDeque<tefa> {
+
+public class LinkedListDeque<tefa> implements Deque<tefa>,Iterable<tefa>{
     private class node {
         node(){}
         node(tefa val, node nex, node pre) {
@@ -25,13 +29,14 @@ public class LinkedListDeque<tefa> {
         sentinel.prev=sentinel;
         size = 0;
     }
+    @Override
     public void addFirst(tefa val) {
         node first=new node(val,sentinel.next,sentinel);
         sentinel.next.prev=first;
         sentinel.next=first;
         size++;
     }
-
+    @Override
     public void addLast(tefa val) {
         node last=new node(val,sentinel,sentinel.prev);
         sentinel.prev.next=last;
@@ -39,11 +44,11 @@ public class LinkedListDeque<tefa> {
         size++;
     }
 
-//    public boolean isEmpty() {return (size() == 0);}
-
+    @Override
     public int size() {
         return size;
     }
+    @Override
     public void printDeque(){
         node temp=sentinel.next;
         while(temp!=sentinel){
@@ -52,7 +57,7 @@ public class LinkedListDeque<tefa> {
         }
         System.out.println();
     }
-    public boolean isEmpty(){return (size()==0);}
+    @Override
     public tefa removeFirst(){
         if(isEmpty())return null;
         tefa temp=sentinel.next.value;
@@ -61,6 +66,7 @@ public class LinkedListDeque<tefa> {
         size--;
         return temp;
     }
+    @Override
     public tefa removeLast(){
         if(isEmpty())return null;
         tefa temp=sentinel.prev.value;
@@ -69,6 +75,7 @@ public class LinkedListDeque<tefa> {
         size--;
         return temp;
     }
+    @Override
     public tefa get(int index){
         if(index>=size)return null;
         node temp=sentinel.next;
@@ -86,5 +93,53 @@ public class LinkedListDeque<tefa> {
     public tefa getRecursive(int index){
         if(index>=size)return null;
         return rec(index,sentinel.next);
+    }
+    private class LinkedListDequeIterator <tefa> implements Iterator<tefa> {
+        int pos;
+        public LinkedListDequeIterator(){
+            pos=0;
+        }
+        public boolean hasNext(){
+            return pos<size();
+        }
+        public tefa next(){
+            tefa x=(tefa)get(pos);
+            pos++;
+            return x;
+        }
+    }
+    @Override
+    public Iterator<tefa>iterator(){
+        return new LinkedListDequeIterator();
+    }
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof LinkedListDeque AAD){
+            if(AAD.size()!=size())return false;
+            for(int i=0;i<size();i++){
+                if(get(i)!=AAD.get(i))return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public String toString(){
+        if(size()==0)return "{}";
+        StringBuilder s=new StringBuilder("{");
+        int cnt=1;
+        for(tefa it:this){
+            s.append(it);
+            if(cnt<size())
+                s.append(", ");
+            cnt++;
+        }
+        s.append("}");
+        return s.toString();
+    }
+    public static void main(String []args){
+        LinkedListDeque<Integer>d=new LinkedListDeque<>();
+        d.addFirst(5);
+        for(int a:d) System.out.println(a);
     }
 }
