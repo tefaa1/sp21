@@ -5,24 +5,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import static gitlet.Utils.*;
 
 public class repoUtils {
-    private static HashMap<String, String> curfiles = new HashMap<>() {{
-        put("pom.xml", "TEFA");
-        put("Makefile", "TEFA");
-        put("gitlet-design.md", "TEFA");  // just temporary ;)
-        put("testing", "TEFA");
-        put("target", "TEFA");
-        put("gitlet", "TEFA");
-        put(".idea", "TEFA");
-        put(".gitlet", "TEFA");
-    }};
+    private static final File CWD = new File(System.getProperty("user.dir"));
+    private static final File GITLET_DIR = join(CWD, ".gitlet");
 
     public static void makeNewFile(File newFile) {
         try {
@@ -32,6 +22,7 @@ public class repoUtils {
             e.printStackTrace();
         }
     }
+
     public static void createPathIfNotExists(String pathString) {
         // Create a Path object from the provided string
         Path path = Paths.get(pathString);
@@ -49,72 +40,79 @@ public class repoUtils {
             e.printStackTrace();
         }
     }
+
     public static void checkRepo(File check) {
         if (!check.exists()) {
-            System.out.println("there is no repository");
+            System.out.println("Not in an initialized Gitlet directory.");
             System.exit(0);
         }
     }
 
-    public static String HashCode(File x) {
+    public static String H(File x) {
         return sha1(serialize(x)) + sha1(readContentsAsString(x));
     }
-    public static String getSpecificPath(String fullPath,File gitLet){
+
+    public static String getSpecificPath(String fullPath, File gitLet) {
         Path basePath = gitLet.getParentFile().toPath();
         Path filePath = Paths.get(fullPath);
         Path relativePath = basePath.relativize(filePath);
         return relativePath.toString().replace("\\", "/");
         // Replace backslashes with forward slashes
     }
+
     // recursion method to get all files
-    public static void getFiles(HashMap<String, String> allFiles, File WD,File gitLet) {
-        if (WD.isDirectory()) {
-            if (!curfiles.containsKey(WD.getName())) {
-                File[] files = WD.listFiles();
+    public static void getFiles(HashMap<String, String> allFiles, File W, File gitLet) {
+        File C = join(GITLET_DIR, "allFiles");
+        HashMap<String, String> curFiles = readObject(C, HashMap.class);
+        if (W.isDirectory()) {
+            if (!curFiles.containsKey(W.getName())) {
+                File[] files = W.listFiles();
                 for (File it : files) {
-                    getFiles(allFiles, it,gitLet);
+                    getFiles(allFiles, it, gitLet);
                 }
             }
         } else {
-            if (!curfiles.containsKey(WD.getName())) {
-                allFiles.put(getSpecificPath(WD.getAbsolutePath(),gitLet),HashCode(WD));
+            if (!curFiles.containsKey(W.getName())) {
+                allFiles.put(getSpecificPath(W.getAbsolutePath(), gitLet), H(W));
             }
         }
     }
 
-    public static void deleteFiles(File WD) {
-        if (WD.isDirectory()) {
-            if (!curfiles.containsKey(WD.getName())) {
-                File[] files = WD.listFiles();
+    public static void deleteFiles(File W) {
+        File C = join(GITLET_DIR, "allFiles");
+        HashMap<String, String> curFiles = readObject(C, HashMap.class);
+        if (W.isDirectory()) {
+            if (!curFiles.containsKey(W.getName())) {
+                File[] files = W.listFiles();
                 for (File it : files) {
                     deleteFiles(it);
                 }
-                WD.delete();
+                W.delete();
             }
         } else {
-            if (!curfiles.containsKey(WD.getName())) {
-                WD.delete();
+            if (!curFiles.containsKey(W.getName())) {
+                W.delete();
             }
         }
     }
 
     public static String splitPoint(HashSet<String> curSet, HashSet<String> givSet, Commit curCom, Commit givCom) {
-        while(curCom!=null||givCom!=null){
-            if(curCom!=null){
-                String id=curCom.getId();
-                if(givSet.contains(id)){
+        while (curCom != null || givCom != null) {
+            if (curCom != null) {
+                String id = curCom.getId();
+                if (givSet.contains(id)) {
                     return id;
                 }
                 curSet.add(id);
-                curCom=curCom.getParent();
+                curCom = curCom.getParent();
             }
-            if(givCom!=null){
+            if (givCom != null) {
                 String id = givCom.getId();
-                if(curSet.contains(id)){
+                if (curSet.contains(id)) {
                     return id;
                 }
                 givSet.add(id);
-                givCom=givCom.getParent();
+                givCom = givCom.getParent();
             }
         }
         return null;

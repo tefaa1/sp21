@@ -1,7 +1,5 @@
 package gitlet;
 
-import java.io.File;
-
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author mohamed abdellatif
  */
@@ -37,6 +35,10 @@ public class Main {
                 } else if (args.length > 2) {
                     System.out.println("to indicate a multiword message, put the operand in quotation marks");
                 } else {
+                    if(args[1].equals("")){
+                        System.out.println("Please enter a commit message.");
+                        System.exit(0);
+                    }
                     Repository.commit(args[1]);
                 }
                 break;
@@ -67,6 +69,10 @@ public class Main {
                 } else if (args.length > 2) {
                     System.out.println("to indicate a multiword message, put the operand in quotation marks");
                 } else {
+                    if(args[1].equals("")){
+                        System.out.println("Please enter a commit message.");
+                        System.exit(0);
+                    }
                     Repository.find(args[1]);
                 }
                 break;
@@ -122,7 +128,7 @@ public class Main {
                 }
                 break;
             default:
-                System.out.println("Not Command");
+                System.out.println("No command with that name exists.");
         }
     }
 }

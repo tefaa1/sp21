@@ -6,12 +6,12 @@ import java.io.Serializable;
  */
 public class Branch implements Serializable {
     private String name;
-    private String ID;
+    private String I;
     boolean headOrNot;
 
-    public Branch(String name, String ID, boolean headOrNot) {
+    public Branch(String name, String I, boolean headOrNot) {
         this.name = name;
-        this.ID = ID;
+        this.I = I;
         this.headOrNot = headOrNot;
     }
 
@@ -19,8 +19,8 @@ public class Branch implements Serializable {
         this.name = name;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setID(String I) {
+        this.I = I;
     }
 
     public void setHeadOrNot(boolean headOrNot) {
@@ -32,7 +32,7 @@ public class Branch implements Serializable {
     }
 
     public String getID() {
-        return ID;
+        return I;
     }
 
     public boolean getHeadOrNot() {
