@@ -27,7 +27,7 @@ public class CapersRepository {
     /**
      * Main metadata folder.
      */
-    static final File CAPERS_FOLDER = Utils.join(".capers");
+    static final File CAPERS_FOLDER = Utils.join(CWD,".capers");
 
     /**
      * Does required filesystem operations to allow for persistence.
@@ -69,7 +69,7 @@ public class CapersRepository {
      */
     public static void makeDog(String name, String breed, int age) {
         Dog d = new Dog(name, breed, age);
-        System.out.println(d.toString());
+        System.out.println(d);
         d.saveDog();
     }
 

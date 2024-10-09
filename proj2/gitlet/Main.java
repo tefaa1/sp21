@@ -1,7 +1,9 @@
 package gitlet;
 
+import java.io.File;
+
 /** Driver class for Gitlet, a subset of the Git version-control system.
- *  @author TODO
+ *  @author mohamed abdellatif
  */
 public class Main {
 
@@ -9,16 +11,118 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
+        if (args.length == 0) {
+            System.out.println("Please enter a command.");
+            System.exit(0);
+        }
         String firstArg = args[0];
-        switch(firstArg) {
+        switch (firstArg) {
             case "init":
-                // TODO: handle the `init` command
+                if (args.length != 1) {
+                    System.out.println("invalid args");
+                } else {
+                    Repository.init();
+                }
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
+                if (args.length != 2) {
+                    System.out.println("invalid args");
+                } else {
+                    Repository.add(args[1]);
+                }
                 break;
-            // TODO: FILL THE REST IN
+            case "commit":
+                if (args.length == 1) {
+                    System.out.println("Please enter a commit message.");
+                } else if (args.length > 2) {
+                    System.out.println("to indicate a multiword message, put the operand in quotation marks");
+                } else {
+                    Repository.commit(args[1]);
+                }
+                break;
+            case "rm":
+                if (args.length != 2) {
+                    System.out.println("invalid args");
+                } else {
+                    Repository.rm(args[1]);
+                }
+                break;
+            case "log":
+                if (args.length != 1) {
+                    System.out.println("invalid args");
+                } else {
+                    Repository.log();
+                }
+                break;
+            case "global-log":
+                if (args.length != 1) {
+                    System.out.println("invalid args");
+                } else {
+                    Repository.globalLog();
+                }
+                break;
+            case "find":
+                if (args.length == 1) {
+                    System.out.println("Please enter a commit message.");
+                } else if (args.length > 2) {
+                    System.out.println("to indicate a multiword message, put the operand in quotation marks");
+                } else {
+                    Repository.find(args[1]);
+                }
+                break;
+            case "status":
+                if (args.length != 1) {
+                    System.out.println("invalid args");
+                } else {
+                    Repository.status();
+                }
+                break;
+            case "checkout":
+                if (args.length == 2) {
+                    Repository.checkoutWithBranch(args[1]);
+                } else if (args.length == 3) {
+                    Repository.checkoutWithName(args[2]);
+                }// head commit
+                else if (args.length == 4) {
+                    Repository.checkoutWithId(args[1], args[3]);
+                } else {
+                    System.out.println("invalid args");
+                }
+                break;
+            case "branch":
+                if (args.length == 1) System.out.println("Please enter a branch name");
+                else if (args.length == 2) {
+                    Repository.branch(args[1]);
+                } else {
+                    System.out.println("invalid args");
+                }
+                break;
+            case "rm-branch":
+                if (args.length == 1) System.out.println("Please enter a branch name");
+                else if (args.length == 2) {
+                    Repository.remBranch(args[1]);
+                } else {
+                    System.out.println("invalid args");
+                }
+                break;
+            case "reset":
+                if (args.length == 1) System.out.println("Please enter a commit ID");
+                else if (args.length == 2) {
+                    Repository.reset(args[1]);
+                } else {
+                    System.out.println("invalid args");
+                }
+                break;
+            case "merge":
+                if (args.length == 1) System.out.println("Please enter a branch name");
+                else if (args.length == 2) {
+                    Repository.merge(args[1]);
+                } else {
+                    System.out.println("invalid args");
+                }
+                break;
+            default:
+                System.out.println("Not Command");
         }
     }
 }

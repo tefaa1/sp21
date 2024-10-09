@@ -1,10 +1,10 @@
 # Gitlet Design Document
 
-**Name**:
+**Name**: mohamed abdellatif
 
 ## Classes and Data Structures
 
-### Class 1
+### Repository
 
 #### Fields
 
