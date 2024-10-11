@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 import static gitlet.Utils.*;
 
-public class repoUtils {
+public class RepoUtils {
     private static final File CWD = new File(System.getProperty("user.dir"));
     private static final File GITLET_DIR = join(CWD, ".gitlet");
 
@@ -96,7 +96,8 @@ public class repoUtils {
         }
     }
 
-    public static String splitPoint(HashSet<String> curSet, HashSet<String> givSet, Commit curCom, Commit givCom) {
+    public static String splitPoint(HashSet<String> curSet
+            , HashSet<String> givSet, Commit curCom, Commit givCom) {
         while (curCom != null || givCom != null) {
             if (curCom != null) {
                 String id = curCom.getId();

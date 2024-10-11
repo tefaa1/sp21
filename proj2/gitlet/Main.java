@@ -87,10 +87,20 @@ public class Main {
                 if (args.length == 2) {
                     Repository.checkoutWithBranch(args[1]);
                 } else if (args.length == 3) {
-                    Repository.checkoutWithName(args[2]);
+                    if(args[1].equals("--")) {
+                        Repository.checkoutWithName(args[2]);
+                    }
+                    else{
+                        System.out.println("invalid args");
+                    }
                 }// head commit
                 else if (args.length == 4) {
-                    Repository.checkoutWithId(args[1], args[3]);
+                    if(args[2].equals("--")) {
+                        Repository.checkoutWithId(args[1], args[3]);
+                    }
+                    else{
+                        System.out.println("invalid args");
+                    }
                 } else {
                     System.out.println("invalid args");
                 }

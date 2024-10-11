@@ -58,7 +58,7 @@ public class Commit implements Serializable {
         return merge;
     }
 
-    public HashMap<String, String> geRefs() {
+    public HashMap<String, String> getRefs() {
         return refs;
     }
 }

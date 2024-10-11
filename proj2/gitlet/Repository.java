@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import static gitlet.Utils.*;
-import static gitlet.repoUtils.*;
+import static gitlet.RepoUtils.*;
 
 
 /** Represents a gitlet repository.
@@ -16,7 +16,7 @@ import static gitlet.repoUtils.*;
  */
 public class Repository implements Serializable {
     /**
-     * TODO: add instance variables here.
+     *
      *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
@@ -82,7 +82,7 @@ public class Repository implements Serializable {
             writeObject(allFiles, noFiles);
             writeObject(blobsMap, new HashMap<String, String>());
             writeObject(stagedForAddFiles, new HashMap<String, String>());
-            writeObject(stagedForRemoveFiles, new HashSet<String>());
+            writeObject(stagedForRemoveFiles, new HashMap<String,String>());
 
         } else {
             String s = "A Gitlet version-control system already exists in the current directory.";
@@ -95,16 +95,15 @@ public class Repository implements Serializable {
         checkRepo(GITLET_DIR);
         File fileByUser = join(CWD, addedFile);
         HashMap<String, String> stagedAdd = readObject(stagedForAddFiles, HashMap.class);
-        HashSet<String> stagedRem = readObject(stagedForRemoveFiles, HashSet.class);
+        HashMap<String,String> stagedRem = readObject(stagedForRemoveFiles, HashMap.class);
         HashMap<String, String> checkBlobs = readObject(blobsMap, HashMap.class);
         if (!fileByUser.exists()) {
-            if (checkBlobs.containsKey(addedFile)) {
-                HashSet<String> stagedRemove = readObject(stagedForRemoveFiles, HashSet.class);
-                stagedRemove.add(addedFile);
+            if (checkBlobs.containsKey(addedFile)){
+                stagedRem.put(addedFile,checkBlobs.get(addedFile));
                 stagedAdd.remove(addedFile);
                 checkBlobs.remove(addedFile);
                 writeObject(blobsMap, checkBlobs);
-                writeObject(stagedForRemoveFiles, stagedRemove);
+                writeObject(stagedForRemoveFiles, stagedRem);
                 writeObject(stagedForAddFiles, stagedAdd);
             } else {
                 System.out.println("File does not exist.");
@@ -139,7 +138,7 @@ public class Repository implements Serializable {
                     File newBlob = join(blobs, newHash);
                     writeContents(newBlob, readContents(fileByUser));
                     stagedAdd.put(addedFile, newHash);
-                    if (stagedRem.contains(addedFile)) {
+                    if (stagedRem.containsKey(addedFile)) {
                         stagedRem.remove(addedFile);
                     }
                     checkBlobs.put(addedFile, newHash);
@@ -154,7 +153,7 @@ public class Repository implements Serializable {
     public static void commit(String message) {
         checkRepo(GITLET_DIR);
         HashMap<String, String> stagedAdd = readObject(stagedForAddFiles, HashMap.class);
-        HashSet<String> stagedRemove = readObject(stagedForRemoveFiles, HashSet.class);
+        HashMap<String,String> stagedRemove = readObject(stagedForRemoveFiles, HashMap.class);
         if (stagedAdd.isEmpty() && stagedRemove.isEmpty()) {
             System.out.println("No changes added to the commit.");
             System.exit(0);
@@ -180,14 +179,23 @@ public class Repository implements Serializable {
     public static void rm(String rem) {
         checkRepo(GITLET_DIR);
         HashMap<String, String> stagedAdd = readObject(stagedForAddFiles, HashMap.class);
-        HashSet<String> stagedRemove = readObject(stagedForRemoveFiles, HashSet.class);
+        HashMap<String,String> stagedRemove = readObject(stagedForRemoveFiles, HashMap.class);
         HashMap<String, String> checkBlobs = readObject(blobsMap, HashMap.class);
         Branch br = readObject(join(branches, readContentsAsString(head)), Branch.class);
         Commit com = readObject(join(commits, br.getID()), Commit.class);
-        HashMap<String, String> prevRefs = com.geRefs();
+        HashMap<String, String> prevRefs = com.getRefs();
         File check = join(CWD, rem);
         if (!check.exists()) {
-            System.out.println("No reason to remove the file.");
+            if (checkBlobs.containsKey(rem)){
+                stagedRemove.put(rem,checkBlobs.get(rem));
+                stagedAdd.remove(rem);
+                checkBlobs.remove(rem);
+                writeObject(blobsMap, checkBlobs);
+                writeObject(stagedForRemoveFiles, stagedRemove);
+                writeObject(stagedForAddFiles, stagedAdd);
+            } else {
+                System.out.println("File does not exist.");
+            }
         } else {
             String hash = H(check);
             if (hash.equals(stagedAdd.get(rem))) {
@@ -198,7 +206,7 @@ public class Repository implements Serializable {
             } else {
                 if (hash.equals(prevRefs.get(rem))) {
                     stagedAdd.remove(rem);
-                    stagedRemove.add(rem);
+                    stagedRemove.put(rem,hash);
                     checkBlobs.remove(rem);
                     File del = join(CWD, rem);
                     restrictedDelete(del);
@@ -263,6 +271,9 @@ public class Repository implements Serializable {
         checkRepo(GITLET_DIR);
         HashSet<String> branch = readObject(branchesSet, HashSet.class);
         String cur = readContentsAsString(head);
+        HashMap<String, String> curFiles = new HashMap<>();
+        HashMap<String, String> checkBlobs = readObject(blobsMap, HashMap.class);
+        getFiles(curFiles, CWD, join(CWD, ".gitlet"));
         System.out.println("=== Branches ===");
         for (String it : branch) {
             if (it.equals(cur)) {
@@ -271,31 +282,40 @@ public class Repository implements Serializable {
             System.out.println(it);
         }
         HashMap<String, String> stagedAdd = readObject(stagedForAddFiles, HashMap.class);
-        HashSet<String> stagedRem = readObject(stagedForRemoveFiles, HashSet.class);
+        HashMap<String,String> stagedRem = readObject(stagedForRemoveFiles, HashMap.class);
         System.out.println("\n=== Staged Files ===");
         for (String it : stagedAdd.keySet()) {
             System.out.println(it);
         }
         System.out.println("\n=== Removed Files ===");
-        for (String it : stagedRem) {
+        List<String>list=new ArrayList<>();
+        stagedRem.forEach((key,value)->{
+            File test=join(key);
+            if(test.exists()){
+                if(value.equals(H(test))){
+                    list.add(key);
+                }
+            }
+        });
+        for(String it:list){
+            stagedRem.remove(it);
+        }
+        for (String it : stagedRem.keySet()) {
             System.out.println(it);
         }
         System.out.println("\n=== Modifications Not Staged For Commit ===");
-        HashMap<String, String> allFiles = new HashMap<>();
-        HashMap<String, String> checkBlobs = readObject(blobsMap, HashMap.class);
-        getFiles(allFiles, CWD, join(CWD, ".gitlet"));
         checkBlobs.forEach((key, value) -> {
-            if (allFiles.containsKey(key)) {
-                if (!value.equals(allFiles.get(key))) {
+            if (curFiles.containsKey(key)) {
+                if (!value.equals(curFiles.get(key))) {
                     System.out.println(key + " (modified)");
                 }
-                allFiles.remove(key);
+                curFiles.remove(key);
             } else {
                 System.out.println(key + " (deleted)");
             }
         });
         System.out.println("\n=== Untracked Files ===");
-        allFiles.forEach((key, value) -> {
+        curFiles.forEach((key, value) -> {
             System.out.println(key);
         });
     }
@@ -316,8 +336,8 @@ public class Repository implements Serializable {
             System.exit(0);
         }
         Commit H = readObject(fileCommit, Commit.class);
-        if (H.geRefs().containsKey(name)) {
-            String hash = H.geRefs().get(name);
+        if (H.getRefs().containsKey(name)) {
+            String hash = H.getRefs().get(name);
             File oldVersion = join(blobs, hash);
             File newVersion = join(CWD, name);
             createPathIfNotExists(name);
@@ -347,32 +367,38 @@ public class Repository implements Serializable {
     }
 
     private static void bringCommit(String I) {
-        HashMap<String, String> allFiles = new HashMap<>();
-        getFiles(allFiles, CWD, join(CWD, ".gitlet"));
-        HashMap<String, String> stagedAdd = readObject(stagedForAddFiles, HashMap.class);
-        HashSet<String> stagedRemove = readObject(stagedForRemoveFiles, HashSet.class);
+        HashMap<String, String> curFiles = new HashMap<>();
+        getFiles(curFiles, CWD, join(CWD, ".gitlet"));
         HashMap<String, String> checkBlobs = readObject(blobsMap, HashMap.class);
-        if (!checkBlobs.equals(allFiles) || !stagedAdd.isEmpty() || !stagedRemove.isEmpty()) {
-            System.out.println("There is an untracked file in the way; " +
-                    "delete it, or add and commit it first.");
-            System.exit(0);
-        } else {
-            deleteFiles(CWD);
-            checkBlobs.clear();
-            Commit com = readObject(join(commits, I), Commit.class);
-            HashMap<String, String> refs = com.geRefs();
-            refs.forEach((key, value) -> {
-                checkBlobs.put(key, value);
-                createPathIfNotExists(key);
-                File dest = join(CWD, key);
-                File source = join(blobs, value);
-                makeNewFile(dest);
-                writeContents(dest, readContents(source));
-            });
-            writeObject(blobsMap, checkBlobs);
-        }
+        Branch top = readObject(join(branches, readContentsAsString(head)), Branch.class);
+        Commit test = readObject(join(commits, top.getID()), Commit.class);
+        HashMap<String, String> curRefs = test.getRefs();
+        Commit test1 = readObject(join(commits, I), Commit.class);
+        HashMap<String, String> checkoutRefs = test1.getRefs();
+        curRefs.forEach((key, value) -> {
+            if (checkoutRefs.containsKey(key)) {
+                if (!value.equals(curFiles.get(key))) {
+                    String s = "There is an untracked file in the way; "
+                            + "delete it, or add and commit it first.";
+                    System.out.println(s);
+                    System.exit(0);
+                }
+            }
+        });
+        deleteFiles(CWD);
+        checkBlobs.clear();
+        Commit com = readObject(join(commits, I), Commit.class);
+        HashMap<String, String> refs = com.getRefs();
+        refs.forEach((key, value) -> {
+            checkBlobs.put(key, value);
+            createPathIfNotExists(key);
+            File dest = join(CWD, key);
+            File source = join(blobs, value);
+            makeNewFile(dest);
+            writeContents(dest, readContents(source));
+        });
+        writeObject(blobsMap, checkBlobs);
     }
-
     public static void branch(String name) {
         checkRepo(GITLET_DIR);
         HashSet<String> allBranches = readObject(branchesSet, HashSet.class);
@@ -424,10 +450,10 @@ public class Repository implements Serializable {
     public static void merge(String name) {
         checkRepo(GITLET_DIR);
         HashMap<String, String> stagedAdd = readObject(stagedForAddFiles, HashMap.class);
-        HashSet<String> stagedRemove = readObject(stagedForRemoveFiles, HashSet.class);
+        HashMap<String,String> stagedRemove = readObject(stagedForRemoveFiles, HashMap.class);
         if (!stagedAdd.isEmpty() || !stagedRemove.isEmpty()) {
-            System.out.println("There is an untracked file in the way;" +
-                    " delete it, or add and commit it first.");
+            String s = "There is an untracked file in the way; delete it, or add and commit it first.";
+            System.out.println(s);
             System.exit(0);
         }
         File file = join(branches, name);
@@ -442,12 +468,12 @@ public class Repository implements Serializable {
             System.out.println("Cannot merge a branch with itself.");
             System.exit(0);
         }
-        HashMap<String, String> allFiles = new HashMap<>();
-        getFiles(allFiles, CWD, join(CWD, ".gitlet"));
+        HashMap<String, String> curFiles = new HashMap<>();
+        getFiles(curFiles, CWD, join(CWD, ".gitlet"));
         HashMap<String, String> checkBlobs = readObject(blobsMap, HashMap.class);
-        if (!checkBlobs.equals(allFiles)) {
-            System.out.println("There is an untracked file in the way;" +
-                    " delete it, or add and commit it first.");
+        if (!checkBlobs.equals(curFiles)) {
+            String s = "There is an untracked file in the way; delete it, or add and commit it first.";
+            System.out.println(s);
             System.exit(0);
         }
         Commit curCommit = readObject(join(commits, curBranch.getID()), Commit.class);
@@ -463,10 +489,10 @@ public class Repository implements Serializable {
             System.out.println("Current branch fast-forwarded.");
             System.exit(0);
         }
-        HashMap<String, String> givRefs = givCommit.geRefs();
-        HashMap<String, String> curRefs = curCommit.geRefs();
+        HashMap<String, String> givRefs = givCommit.getRefs();
+        HashMap<String, String> curRefs = curCommit.getRefs();
         Commit idCommit = readObject(join(commits, I), Commit.class);
-        HashMap<String, String> idRefs = idCommit.geRefs();
+        HashMap<String, String> idRefs = idCommit.getRefs();
         deleteFiles(CWD);
         checkBlobs.clear();
         givRefs.forEach((key, value) -> {
@@ -586,10 +612,15 @@ public class Repository implements Serializable {
         String msg = "Merged " + readContentsAsString(head) + " into " + name;
         String merge = curCommit.getId().substring(0, 7) + " " + givCommit.getId().substring(0, 7);
         Commit com = new Commit(msg, curCommit, givCommit, merge);
-        com.setId(sha1(serialize(com)));
+        File temp=join(branches,readContentsAsString(head));
+        Branch cur=readObject(temp,Branch.class);
+        String hash=sha1(serialize(com));
+        com.setId(hash);
+        cur.setID(hash);
         File dest = join(commits, com.getId());
         makeNewFile(dest);
         writeObject(dest, com);
+        writeObject(temp,cur);
         // hahahahahahhahahahahahhaaaah finallllyyyyyyyy
     }
 }
